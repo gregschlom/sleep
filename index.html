@@ -52,7 +52,7 @@
       var time = new Date(times[i]);
       var delay = "";
       if (i > 0) {
-        delay = " - " + getDuration(new Date(times[0]), time);
+        delay = " - " + getDuration(new Date(times[i-1]), time);
       }
       list.innerHTML += "<li>" + formatTime(time) + delay + "</li>";
     }
