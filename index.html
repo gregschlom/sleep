@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Sleep tracker</title>
+
+  <script type="text/javascript">
+  var wakeUpTimes = [];
+    
+  function formatTime(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+
+    minutes = ( minutes < 10 ? "0" : "" ) + minutes;
+    // hours = ( hours > 12 ) ? hours - 12 : hours;
+    // hours = ( hours == 0 ) ? 12 : hours;
+    return hours + ":" + minutes;
+  }
+
+  function updateClock() {
+    document.getElementById("time").firstChild.nodeValue = formatTime(new Date());
+  }
+
+  function tapped() {
+    var times = getTimes();
+    times.push(new Date());
+    setTimes(times);
+    renderTimeTable();
+  }
+
+  function getTimes() {
+    return JSON.parse(localStorage.getItem("times")) || [];
+  }
+
+  function setTimes(times) {
+    localStorage.setItem("times", JSON.stringify(times));
+  }
+
+  function getDuration(start, stop) {
+    var minutes = Math.round((stop - start) / (1000 * 60));
+    if (minutes < 60) return minutes + "m";
+    var hours = Math.floor(minutes / 60);
+    return hours + "h " + (minutes % 60) + "m";
+  }
+
+  function renderTimeTable() {
+    var times = getTimes();
+    var list = document.getElementById("timeList");
+    list.innerHTML = "";
+
+    for (var i = 0; i < times.length; i++) {
+      var time = new Date(times[i]);
+      var delay = "";
+      if (i > 0) {
+        delay = " - " + getDuration(new Date(times[0]), time);
+      }
+      list.innerHTML += "<li>" + formatTime(time) + delay + "</li>";
+    }
+  }
+
+  function resetTimes() {
+    setTimes([]); 
+    renderTimeTable();
+  }
+
+  function dropLast() {
+    var times = getTimes();
+    times.pop();
+    setTimes(times); 
+    renderTimeTable();
+  }  
+
+  setInterval(updateClock, 60000);
+
+</script>
+
+</head>
+<body style="background-color: #000; color: #310; font-family: sans-serif; text-align: center;">
+<div id="time" style="font-size: 30vw; user-select: none;" onclick="tapped();">00:00</div>
+<ol id="timeList" style="font-size: 5vw;"></ol>
+<div onclick="resetTimes();">reset</div>
+<br/>
+<div onclick="dropLast();">drop last</div>
+
+<script type="text/javascript">
+  updateClock();
+  renderTimeTable();
+</script>
+</body>
+</html>
